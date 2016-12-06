@@ -130,11 +130,11 @@ object MainObject {
           val matc = MatchFactory(mAlgo(v),cols(n),cols(n+1))
           score = matc.calculateScore()
 //          comparison += "{(" + cols(n) + " , " + cols(n+1) + ")" + " => Algorithm :: "+ mAlgo(v) + " , Score :: " + score.toString() +" }"
-            comparison += cols(n) + " , " + cols(n+1) + " , " + score.toString() + " , "
+            comparison +=  cols(n) + " , " + cols(n+1) + " , " + score.toString() + " , "
           n = n + 2
      }
 //     (row,comparison)
-     (comparison.mkString)
+     (sp(0).split(",")(1).replaceAll("[()]", "") + " , " + sp(1).split(",")(1).replaceAll("[()]", "")+ " , " +comparison.mkString)
     }.saveAsTextFile(outputFile)
   }
 }
