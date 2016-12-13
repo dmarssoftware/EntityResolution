@@ -80,7 +80,7 @@ object Main {
           for(i <- 0 until bkcnt.length){
              val value = bkcnt(i).split(",")
              
-             bkmap += (value(0).toInt -> value(1).toInt)
+             bkmap += (value(0).toInt+1 -> value(1).toInt)
           }
         
         bkParam += (filename -> bkmap)
@@ -131,7 +131,7 @@ object Main {
    
    (blockingKeys , t.toString())
   }.saveAsSequenceFile(tempFolder+"keyData")
-    
+//    }.saveAsTextFile(tempFolder+"keyData")   
   
     
     
@@ -142,6 +142,7 @@ object Main {
     val fs = FileSystem.get(hadoopconf);
     val outFileStream = fs.create(new Path(tempFolder+"key_cnt"))
     val kpmrdd =sc.sequenceFile[String,String](tempFolder+"keyData").collect()
+//   val kpmrdd =sc.textFile(tempFolder+"keyData").collect()
    
     kpmrdd.map{t => 
       
