@@ -57,7 +57,7 @@ object MainObject {
       
      //chkParam += (filename -> colnum)
     }
-    colAlgo.foreach { colMatch += _.split(sep_column_algo)(0).toInt  }  // Stores all the column numbers in an Array serially  --split(":")
+    colAlgo.foreach { colMatch += _.split(sep_column_algo)(0).toInt+1  }  // Stores all the column numbers in an Array serially  --split(":")
     colAlgo.foreach { mAlgo += _.split(sep_column_algo)(1) }            // Stores all the matching algorithms in an Array serially  --split(":")
     
       
@@ -70,8 +70,14 @@ object MainObject {
       //println(row)
      val sp = row.split(sep_data_file)  // --split("\\),\\(")
      var cols = new ArrayBuffer[String]()
-     val filen1 = sp(0).split(",")(0).replaceAll("[()]", "")  //  --split the filename for each set
-     val filen2 = sp(1).split(",")(0).replaceAll("[()]", "")  //  --split the filename for each set
+     val blockkey1 = sp(0).split(",")(0).replaceAll("[()]", "")
+     val blockkey2 = sp(1).split(",")(0).replaceAll("[()]", "")
+     
+     val filen1 = sp(0).split(",")(1).replaceAll("[()]", "")  //  --split the filename for each set     
+     val filen2 = sp(1).split(",")(1).replaceAll("[()]", "")  //  --split the filename for each set
+     
+     val file_rec1 = sp(0).split(",")(2).replaceAll("[()]", "");  // -- take the filename with record number
+     val file_rec2 = sp(1).split(",")(2).replaceAll("[()]", "");  // -- take the filename with record number
      
      var colvalFirst = ""
      var colvalSecond = ""
@@ -133,8 +139,11 @@ object MainObject {
             comparison +=  cols(n) + " , " + cols(n+1) + " , " + score.toString() + " , "
           n = n + 2
      }
-//     (row,comparison)
-     (sp(0).split(",")(1).replaceAll("[()]", "") + " , " + sp(1).split(",")(1).replaceAll("[()]", "")+ " , " +comparison.mkString)
+     //(row,comparison)
+     var complte_Row = blockkey1 + " , " + file_rec1 + " , " + blockkey2 + " , " + file_rec2 + " , " +comparison.mkString
+     var compact_Row = complte_Row.substring(0 , complte_Row.length - 2 ) // Remove the last "," from the string
+     
+     (compact_Row)
     }.saveAsTextFile(outputFile)
   }
 }

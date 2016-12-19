@@ -12,6 +12,11 @@ class DamerauLevenshtein(a: String, b: String) extends Matching {
 
   private var calculated: java.lang.Boolean = false
 
+  if ((a.length == 0 || a.isEmpty) || (b.length == 0 || b.isEmpty)){
+  	  compOne = a;
+  	  compTwo = b;
+  	}
+  
   if ((a.length > 0 || !a.isEmpty) || (b.length > 0 || !b.isEmpty)) {
     compOne = a.trim()
     compTwo = b.trim()

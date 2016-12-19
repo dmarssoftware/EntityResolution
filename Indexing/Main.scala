@@ -343,6 +343,7 @@ object Main {
          val pass =bk(0).toInt
          val boundary =bk(1).toInt
          val partition = bk(2).toInt
+         val block_key = bk(3).toString//ayan
          val value = rows(row).split("ListBuffer")(1).replaceAll("\\(", "").replaceAll("\\)", "")
          if(pass != lastPass){
            q.clear()
@@ -354,15 +355,18 @@ object Main {
            
            for(e <- q){
                  if(i != q.length)
-                 rowData = rowData.concat(("("+e+"),("+value+")"+"\n"))
+//                 rowData = rowData.concat(("("+e+"),("+value+")"+"\n"))
+                 rowData = rowData.concat(("("+e+"),("+block_key+" , "+value+")"+"\n"))//ayan
             else
-                 rowData = rowData.concat(("("+e+"),("+value+")"))
+//                 rowData = rowData.concat(("("+e+"),("+value+")"))
+                 rowData = rowData.concat(("("+e+"),("+block_key+" , "+value+")")) //ayan
              
             i=i+1
            }
          }
          
-        q.enqueue(value.toString())
+        //q.enqueue(value.toString())
+         q.enqueue(block_key+" , "+value.toString())
         if(q.size == windowSizeArray.get(pass).get){
            q.dequeue()
          }

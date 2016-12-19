@@ -18,7 +18,11 @@ class Levenshtein(s1: String, s2: String) extends Matching {
   private var compTwo: String = _
   
   private var max_len: Double = _
-  	
+  
+    if ((s1.length == 0 || s1.isEmpty) || (s2.length == 0 || s2.isEmpty)){
+  	  compOne = s1;
+  	  compTwo = s2;
+  	}
   	if ((s1.length > 0 || !s1.isEmpty) || (s1.length > 0 || !s2.isEmpty)) {
     	compOne = s1.trim()
     	compTwo = s2.trim()

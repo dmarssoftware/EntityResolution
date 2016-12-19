@@ -16,6 +16,11 @@ class JaroWinkler(s1:String, s2:String) extends Matching {
   
   private var min_length = 0
 
+  if ((s1.length == 0 || s1.isEmpty) || (s2.length == 0 || s2.isEmpty)){
+  	  compOne = s1;
+  	  compTwo = s2;
+  	}
+  
   if ((s1.length > 0 || !s1.isEmpty) || (s1.length > 0 || !s2.isEmpty)) {
     if(s1.length > s2.length){
     	compOne = s2
