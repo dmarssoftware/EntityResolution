@@ -2,7 +2,6 @@ package com.rs.Indexing
 
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import org.apache.spark.StorageLevel
 import scala.collection.JavaConversions._
 
 import collection.mutable.HashMap
