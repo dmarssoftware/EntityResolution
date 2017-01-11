@@ -206,8 +206,8 @@ object Main {
 																}
 													}
 
-							println("Unsorted: "+sortkey.toList)
-							println("Sorted: "+sortkey.toList.sorted)
+							//println("Unsorted: "+sortkey.toList)
+							//println("Sorted: "+sortkey.toList.sorted)
 							// println(BKwithValues.get("blue17").get)
 
 							for(bk <- sortkey.toList.sorted){
@@ -218,12 +218,12 @@ object Main {
 										entityIndexes.put(i+":"+bk, cnt)
 
 										entityIndex = entityIndex + compkey.getValue()  
-										println(entityIndex)
+//										println(entityIndex)
 							}       
 						}
-						println()
-						println(entityIndexes)
-						println()
+//						println()
+//						println(entityIndexes)
+//						println()
 						//Pass-aware and window size-aware reduce task
 						//assignment for each entity, targeting an equal
 						// number of pairs per reduce task
@@ -246,32 +246,32 @@ object Main {
 							var entitiesLeft = n
 									while(entitiesLeft > 0 ){
 										var entitiesThatFit = min(((pairsLeft/windowSizeArray.get(k).get)+windowSizeArray.get(k).get/2),entitiesLeft);
-										println("entitiesThatFit: "+entitiesThatFit)
+//										println("entitiesThatFit: "+entitiesThatFit)
 
 										offset = offset +entitiesLeft;
-										println("offset: "+offset)
+//										println("offset: "+offset)
 
 										splitPoint += offset
-										println("splitPoint: "+ splitPoint)
+//										println("splitPoint: "+ splitPoint)
 
 										entitiesLeft = entitiesLeft - entitiesThatFit;
-										println("entitiesLeft: "+entitiesLeft)
+//										println("entitiesLeft: "+entitiesLeft)
 
 										var pairsThatFit = (entitiesThatFit - windowSizeArray.get(k).get/2) * (windowSizeArray.get(k).get-1);
 										// 			        println(entitiesThatFit)
 										// 			        println( windowSizeArray.get(k).get/2)
 										// 			        println(windowSizeArray.get(k).get-1)
-										println("pairsThatFit: "+pairsThatFit)
+//										println("pairsThatFit: "+pairsThatFit)
 
 										pairsLeft = pairsLeft - pairsThatFit;
-										println("pairsLeft: "+pairsLeft)
-										println()
+//										println("pairsLeft: "+pairsLeft)
+//										println()
 										if (pairsLeft <= 0)
 											pairsLeft=No;
 									}
 						}
 						splitPoint.toList
-						println("splitPoint "+splitPoint)
+//						println("splitPoint "+splitPoint)
 						//job2 
 
 						val fs1 = FileSystem.get(hadoopconf)
@@ -361,9 +361,7 @@ object Main {
 
 								val in = sc.wholeTextFiles(tempFolder+"AfterSecSort").persist(StorageLevel.MEMORY_AND_DISK_SER_2)
 							
-//							val in = sc.textFile(tempFolder+"AfterSecSort").persist(StorageLevel.MEMORY_AND_DISK_SER_2)	
-							
-						  var rowData :String =""
+						  var rowData :String =" "
 
 								in.map {filedata =>
 
@@ -381,7 +379,7 @@ object Main {
 												q.clear()
 												lastPass = pass
 											}
-									rowData=""
+									rowData=" "
 											if(boundary == partition){
 												var i =1
 
