@@ -361,7 +361,7 @@ object Main {
 
 								val in = sc.wholeTextFiles(tempFolder+"AfterSecSort").persist(StorageLevel.MEMORY_AND_DISK_SER_2)
 							
-						  var rowData :String =" "
+						  var rowData :String =""
 
 								in.map {filedata =>
 
@@ -379,7 +379,7 @@ object Main {
 												q.clear()
 												lastPass = pass
 											}
-									rowData=" "
+									rowData=""
 											if(boundary == partition){
 												var i =1
 

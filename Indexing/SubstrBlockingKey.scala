@@ -15,16 +15,16 @@ class SubstrBlockingKey {
       var colVal=""
       if(colSeparator.equals(",")){
         
-        colLen = row.split(colSeparator)(index).length         // trim() added
-        colVal = row.split(colSeparator)(index).toLowerCase()//.trim()  // trim() added
+        colLen = row.split(colSeparator)(index).length        
+        colVal = row.split(colSeparator)(index).toLowerCase()
       }
       else
       {
-         colLen = row.split(colSeparator)(index - 1 ).length         // trim() added
-         colVal = row.split(colSeparator)(index - 1 ).toLowerCase()//.trim()  // trim() added
+         colLen = row.split(colSeparator)(index - 1 ).length 
+         colVal = row.split(colSeparator)(index - 1 ).toLowerCase()
          if(index == 1)
          {
-           colVal = colVal.split(",")(1)//.trim() //trim() added
+           colVal = colVal.split(",")(1)
          }
         
       }
