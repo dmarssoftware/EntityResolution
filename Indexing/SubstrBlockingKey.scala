@@ -16,15 +16,15 @@ class SubstrBlockingKey {
       if(colSeparator.equals(",")){
         
         colLen = row.split(colSeparator)(index).length
-        colVal = row.split(colSeparator)(index).toLowerCase()
+        colVal = row.split(colSeparator)(index).toLowerCase().trim()  // trim() added
       }
       else
       {
          colLen = row.split(colSeparator)(index - 1 ).length
-         colVal = row.split(colSeparator)(index - 1 ).toLowerCase()
+         colVal = row.split(colSeparator)(index - 1 ).toLowerCase().trim()  // trim() added
          if(index == 1)
          {
-           colVal = colVal.split(",")(1)
+           colVal = colVal.split(",")(1).trim()  //trim() added
          }
         
       }

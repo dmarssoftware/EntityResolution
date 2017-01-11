@@ -26,6 +26,7 @@ import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.mapreduce.lib.input.FileSplit
 import org.apache.spark.TaskContext
+import org.apache.spark.storage.StorageLevel
 
 
 case class Key(passNo : Int, boundary:Int,partition:Int,blockingKey:String)
@@ -46,7 +47,7 @@ object Main {
 					def main(args : Array[String]){
 
 		//For running in window machine
-		//  System.setProperty("hadoop.home.dir", "C:\\winutils");
+//		System.setProperty("hadoop.home.dir", "C:\\winutils");
 		val inputFile = args(0)
 				val outputFile = args(1)
 				val tempFolder = args(2)
@@ -58,7 +59,7 @@ object Main {
 
 
 
-				//     val conf = new SparkConf().setAppName("SNN").setMaster("local")
+//				     val conf = new SparkConf().setAppName("SNN").setMaster("local")
 				val conf = new SparkConf().setAppName("SNN")
 				// Create a Scala Spark Context.
 				val sc = new SparkContext(conf)
@@ -80,7 +81,7 @@ object Main {
 												for(i <- 0 until bkcnt.length){
 													val value = bkcnt(i).split(",")
 
-															bkmap += (value(0).toInt+1 -> value(1).toInt)
+															bkmap += (value(0).toInt -> value(1).toInt)
 												}
 
 										bkParam += (filename -> bkmap)
@@ -137,7 +138,7 @@ object Main {
 
 										//Generate KPM---------------------------------------------------------------------------------
 
-										val hadoopconf = new Configuration();
+						val hadoopconf = new Configuration();
 						hadoopconf.set("fs.defaultFS" , sparkCl)
 						val fs = FileSystem.get(hadoopconf);
 
@@ -160,10 +161,10 @@ object Main {
 						fs.close()
 
 
-						val kpmInput = sc.textFile(tempFolder+"key_cnt")
-						val kpcnt=kpmInput.map( kpdata => (kpdata,1) ).reduceByKey{case (x, y) => x + y}
+						val kpmInput = sc.textFile(tempFolder+"key_cnt").persist(StorageLevel.MEMORY_AND_DISK_SER_2)
+						val kpcnt=kpmInput.map( kpdata => (kpdata,1) ).persist(StorageLevel.MEMORY_AND_DISK_SER_2).reduceByKey{case (x, y) => x + y}
 
-						kpcnt.saveAsTextFile(tempFolder+"KPM")
+						kpcnt.persist(StorageLevel.MEMORY_AND_DISK_SER_2).saveAsTextFile(tempFolder+"KPM")
 						//---------------------------------kpm matrix done---------------------------------------------
 
 						//Auto Partitioner utilizing KPM
@@ -281,7 +282,7 @@ object Main {
 								val outFileStream1 = fs1.create(new Path(tempFolder+"output_AfterKey")) 
 
 
-								val lines =sc.sequenceFile[String,String](tempFolder+"keyData").collect()
+								val lines =sc.sequenceFile[String,String](tempFolder+"keyData").persist(StorageLevel.MEMORY_AND_DISK_SER_2).collect()
 								lines.map{ t => 
 								var line = t.toString().split(",\\(")(0)
 								var keys =line.split("\t")
@@ -332,7 +333,7 @@ object Main {
 																}
 											}
 								}
-								}       
+								}      
 
 						}
 
@@ -349,17 +350,20 @@ object Main {
 						fs1.close()
 						// partition on the basis of pass number and sort on the basis of entire key
 
-						val input =  sc.textFile(tempFolder+"output_AfterKey").map(line => line.split(","))
-						val keyValue =input.map { arr => createKeyValueTuple(arr) }
+						val input =  sc.textFile(tempFolder+"output_AfterKey").map(line => line.split(",")).persist(StorageLevel.MEMORY_AND_DISK_SER_2)
+						val keyValue =input.map { arr => createKeyValueTuple(arr) }.persist(StorageLevel.MEMORY_AND_DISK_SER_2)
 
-						keyValue.repartitionAndSortWithinPartitions(new CustPartitioner(reduceTasks)).saveAsTextFile(tempFolder+"AfterSecSort")
+						keyValue.repartitionAndSortWithinPartitions(new CustPartitioner(reduceTasks)).persist(StorageLevel.MEMORY_AND_DISK_SER_2).saveAsTextFile(tempFolder+"AfterSecSort")
 
 						// Sliding Window----------------------------------------------------------------------------------
 						var lastPass = -1
 						var q = new Queue[String]
 
-								val in = sc.wholeTextFiles(tempFolder+"AfterSecSort")
-								var rowData :String =""
+								val in = sc.wholeTextFiles(tempFolder+"AfterSecSort").persist(StorageLevel.MEMORY_AND_DISK_SER_2)
+							
+//							val in = sc.textFile(tempFolder+"AfterSecSort").persist(StorageLevel.MEMORY_AND_DISK_SER_2)	
+							
+						  var rowData :String =""
 
 								in.map {filedata =>
 
@@ -403,9 +407,9 @@ object Main {
 								q.clear()
 								(matchingcol)    
 
-								}.saveAsTextFile(tempFolder+"WithSpace")
+								}.persist(StorageLevel.MEMORY_AND_DISK_SER_2).saveAsTextFile(tempFolder+"WithSpace")
 
-								sc.textFile(tempFolder+"WithSpace").filter(!_.isEmpty()).saveAsTextFile(outputFile)
+								sc.textFile(tempFolder+"WithSpace").persist(StorageLevel.MEMORY_AND_DISK_SER_2).filter(!_.isEmpty()).saveAsTextFile(outputFile)
 
 
 
@@ -462,4 +466,4 @@ object Main {
 
 	}
 
-}
+}       
