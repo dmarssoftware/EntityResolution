@@ -5,7 +5,7 @@ import org.apache.spark.SparkConf
 
 object UniqueRecordGenerate {
   def main(args: Array[String]): Unit = {
-   // Systm.setProperty("hadoop.home.dir", "C:\\winutils");
+   // System.setProperty("hadoop.home.dir", "C:\\winutils");
     
 //     val conf = new SparkConf().setAppName("join").setMaster("local")
      val conf = new SparkConf().setAppName("join") 
