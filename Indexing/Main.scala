@@ -47,7 +47,7 @@ object Main {
 					def main(args : Array[String]){
 
 		//For running in window machine
-//		System.setProperty("hadoop.home.dir", "C:\\winutils");
+		//		System.setProperty("hadoop.home.dir", "C:\\winutils");
 		val inputFile = args(0)
 				val outputFile = args(1)
 				val tempFolder = args(2)
@@ -59,7 +59,7 @@ object Main {
 
 
 
-//				     val conf = new SparkConf().setAppName("SNN").setMaster("local")
+				//				     val conf = new SparkConf().setAppName("SNN").setMaster("local")
 				val conf = new SparkConf().setAppName("SNN")
 				// Create a Scala Spark Context.
 				val sc = new SparkContext(conf)
@@ -138,7 +138,7 @@ object Main {
 
 										//Generate KPM---------------------------------------------------------------------------------
 
-						val hadoopconf = new Configuration();
+										val hadoopconf = new Configuration();
 						hadoopconf.set("fs.defaultFS" , sparkCl)
 						val fs = FileSystem.get(hadoopconf);
 
@@ -208,7 +208,7 @@ object Main {
 
 							//println("Unsorted: "+sortkey.toList)
 							//println("Sorted: "+sortkey.toList.sorted)
-							// println(BKwithValues.get("blue17").get)
+							//println(BKwithValues.get("blue17").get)
 
 							for(bk <- sortkey.toList.sorted){
 								var compkey = BKwithValues.get(bk).get
@@ -218,21 +218,21 @@ object Main {
 										entityIndexes.put(i+":"+bk, cnt)
 
 										entityIndex = entityIndex + compkey.getValue()  
-//										println(entityIndex)
+										//										println(entityIndex)
 							}       
 						}
-//						println()
-//						println(entityIndexes)
-//						println()
+						//						println()
+						//						println(entityIndexes)
+						//						println()
 						//Pass-aware and window size-aware reduce task
 						//assignment for each entity, targeting an equal
 						// number of pairs per reduce task
 
 
 						var N=0
-						for(j <- 1 to passno){
-							N = ( n - (windowSizeArray.get(j).get/2) ) * (windowSizeArray.get(j).get - 1 )
-						}
+								for(j <- 1 to passno){
+									N = ( n - (windowSizeArray.get(j).get/2) ) * (windowSizeArray.get(j).get - 1 )
+								}
 						//        println("N: "+N)
 						var No = N/reduceTasks;
 						//        println("No: "+No)
@@ -246,32 +246,32 @@ object Main {
 							var entitiesLeft = n
 									while(entitiesLeft > 0 ){
 										var entitiesThatFit = min(((pairsLeft/windowSizeArray.get(k).get)+windowSizeArray.get(k).get/2),entitiesLeft);
-//										println("entitiesThatFit: "+entitiesThatFit)
+										//										println("entitiesThatFit: "+entitiesThatFit)
 
 										offset = offset +entitiesLeft;
-//										println("offset: "+offset)
+										//										println("offset: "+offset)
 
 										splitPoint += offset
-//										println("splitPoint: "+ splitPoint)
+												//										println("splitPoint: "+ splitPoint)
 
-										entitiesLeft = entitiesLeft - entitiesThatFit;
-//										println("entitiesLeft: "+entitiesLeft)
+												entitiesLeft = entitiesLeft - entitiesThatFit;
+										//										println("entitiesLeft: "+entitiesLeft)
 
 										var pairsThatFit = (entitiesThatFit - windowSizeArray.get(k).get/2) * (windowSizeArray.get(k).get-1);
 										// 			        println(entitiesThatFit)
 										// 			        println( windowSizeArray.get(k).get/2)
 										// 			        println(windowSizeArray.get(k).get-1)
-//										println("pairsThatFit: "+pairsThatFit)
+										//										println("pairsThatFit: "+pairsThatFit)
 
 										pairsLeft = pairsLeft - pairsThatFit;
-//										println("pairsLeft: "+pairsLeft)
-//										println()
+										//										println("pairsLeft: "+pairsLeft)
+										//										println()
 										if (pairsLeft <= 0)
 											pairsLeft=No;
 									}
 						}
 						splitPoint.toList
-//						println("splitPoint "+splitPoint)
+						//						println("splitPoint "+splitPoint)
 						//job2 
 
 						val fs1 = FileSystem.get(hadoopconf)
@@ -354,14 +354,15 @@ object Main {
 						val keyValue =input.map { arr => createKeyValueTuple(arr) }.persist(StorageLevel.MEMORY_AND_DISK_SER_2)
 
 						keyValue.repartitionAndSortWithinPartitions(new CustPartitioner(reduceTasks)).persist(StorageLevel.MEMORY_AND_DISK_SER_2).saveAsTextFile(tempFolder+"AfterSecSort")
-
+						
+						
 						// Sliding Window----------------------------------------------------------------------------------
 						var lastPass = -1
 						var q = new Queue[String]
 
 								val in = sc.wholeTextFiles(tempFolder+"AfterSecSort").persist(StorageLevel.MEMORY_AND_DISK_SER_2)
-							
-						  var rowData :String =""
+
+								var rowData :String =""
 
 								in.map {filedata =>
 
@@ -464,4 +465,4 @@ object Main {
 
 	}
 
-}       
+}
