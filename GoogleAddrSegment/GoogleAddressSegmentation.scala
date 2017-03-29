@@ -42,23 +42,23 @@ object GoogleAddressSegmentation {
 								}
 
 								for(i <- 0 until docs.length){
-									if(docs.getJSONObject(i).getString("types").contains("administrative_area_level_2")){
-										san_city = docs.getJSONObject(i).getString("long_name").replaceAll(",", "-")
+									if(docs.getJSONObject(i).getString("types").contains("locality")){
+										san_city = docs.getJSONObject(i).getString("long_name").replaceAll(",", "~")
 									}
 									else if(docs.getJSONObject(i).getString("types").contains("administrative_area_level_1")){
-										san_state = docs.getJSONObject(i).getString("long_name").replaceAll(",", "-")
+										san_state = docs.getJSONObject(i).getString("long_name").replaceAll(",", "~")
 									}
 									else if(docs.getJSONObject(i).getString("types").contains("country")){
-										san_country = docs.getJSONObject(i).getString("long_name").replaceAll(",", "-")
+										san_country = docs.getJSONObject(i).getString("long_name").replaceAll(",", "~")
 									}
 									else if(docs.getJSONObject(i).getString("types").contains("postal_code")){
-										san_zip = san_zip + docs.getJSONObject(i).getString("long_name").replaceAll(",", "-") + "-"
+										san_zip = san_zip + docs.getJSONObject(i).getString("long_name").replaceAll(",", "~")
 									}
-									else if(docs.getJSONObject(i).getString("types").contains("locality")){
-										san_addr2 = docs.getJSONObject(i).getString("long_name").replaceAll(",", "-")
+									else if(docs.getJSONObject(i).getString("types").contains("neighborhood")){
+										san_addr2 = docs.getJSONObject(i).getString("long_name").replaceAll(",", "~")
 									}
-									else{
-										san_addr1 = san_addr1 + docs.getJSONObject(i).getString("long_name").replaceAll(",", "-") + "-"
+									else if(!docs.getJSONObject(i).getString("types").contains("administrative_area_level_2")){
+										san_addr1 = san_addr1 + docs.getJSONObject(i).getString("long_name").replaceAll(",", "~") + "~"
 									}
 									if(san_zip.length > 5){
 									  san_zip = san_zip.substring(0, 5)

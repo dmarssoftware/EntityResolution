@@ -21,35 +21,23 @@ object dataQuality {
 			val city = args(8).toInt
 			val state = args(9).toInt
 			val country = args(10).toInt
-			val total_cols = args(11).toInt
+//			val total_cols = args(11).toInt
 			
 			val preProcess = temp+"/preprocess"
 			val checkFields = temp+"/checkFields"
 			
 			val mandFields = new ArrayBuffer[Int]()
-			var columns = ""
-			val nonMandFields = new ArrayBuffer[Int]()
 			
+			mandFields += businessName
 			mandFields += addressline1
 			mandFields += addressline2
-			mandFields += businessName
-			mandFields += zip
 			mandFields += city
 			mandFields += state
+			mandFields += zip
 			mandFields += country
-			
-			for(i <- 0 until total_cols){
-			  if(!mandFields.contains(i)){
-			    nonMandFields += i
-			  }
-			}
-			if(nonMandFields.length > 0){
-			  for(i <- 1 until nonMandFields.length){
-			    columns = columns + "line("+i+")+delimitter+"
-			  }
-			}
-			println(columns)
-			
+		
+//			println(mandFields)
+	
 			val checkField = sc.textFile(inputFile)
 			                .map (line => line.split(delimitter)
 			                .map (_.replaceAll("[^a-zA-Z0-9 `~!@#$%^&*()-_=+{}|;:<>?,.\\/\\\'\\\"\\\\]", "")
@@ -58,8 +46,8 @@ object dataQuality {
 			                .map (field => field.mkString(delimitter))
 			                .saveAsTextFile(preProcess)
 			
-			val data = sc.textFile(preProcess).map ( 
-			
+			val data = sc.textFile(preProcess).map (
+			    
 			    line => if(line.split(delimitter)(addressline1) == line.split(delimitter)(addressline2)){
 			      line.mkString+delimitter+"address line1 and address line 2 are same"
 			    }
@@ -91,37 +79,23 @@ object dataQuality {
  			    else{
 			      line.mkString+delimitter+"No Missing Fields"
 			    }
-			    
 			).saveAsTextFile(checkFields)
-			
-			/*var unusedCol = ""
-			var unusedFields = ""
-			for( k <- 0 until unusedColumnArray.length){
-				unusedCol = input.split("\n")(i).split(delimitter)(unusedColumnArray(k)).toUpperCase()
-						unusedCol = unusedCol + delimitter
-						unusedFields = unusedFields + unusedCol
-			}*/
+
 			
 			val filter_rows = sc.textFile(checkFields)
-			                  .map(_.split(delimitter))
-			                  .filter(_.last=="No Missing Fields")
-			                  .map (line => line(0)+delimitter+
-			                                line(1)+delimitter+
-			                                line(businessName)+delimitter+
-			                                line(addressline1).toUpperCase().replaceAll("PO BOX", "")+delimitter+
-			                                line(addressline2).toUpperCase().replaceAll("PO BOX", "")+delimitter+
-			                                line(city)+delimitter+
-			                                line(state)+delimitter+
-			                                line(zip)+delimitter+
-			                                line(country)+delimitter+
-			                                line(country+1))
+			                  .map(line => nonMandatory(line, mandFields))
+//			                  .foreach(println)
 			                  .saveAsTextFile(dataQuality)
 			                  
 	}
 	
-	/*def nonMandatory(manFields:Array[Int],numCols:Int):String={
+	def nonMandatory(data:String, manFields:ArrayBuffer[Int]):String={
+
+	  val value = data.split(",")
+	  val numCols = value.length
 	  
-	  var columns = ""
+	  var non_man_columns = ""
+	  var man_columns = ""
 	  val nonManFields = new ArrayBuffer[Int]()
 	  
 	  for(i <- 0 until numCols){
@@ -130,10 +104,13 @@ object dataQuality {
 			  }
 			}
 			if(nonManFields.length > 0){
-			  for(i <- 0 until nonManFields.length){
-			    columns = columns + "+delimitter+line("+(i+1)+")"
+			  for(i <- 1 until nonManFields.length){
+			    non_man_columns = non_man_columns + value(nonManFields(i)) + ","
 			  }
 			}
-			columns
-	}*/
+			for(j <- 0 until manFields.length){
+			  man_columns = man_columns + value(manFields(j)) + ","
+			}
+			value(0)+","+man_columns+non_man_columns.substring(0,non_man_columns.length - 1)
+	}
 }

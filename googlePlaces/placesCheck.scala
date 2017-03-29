@@ -68,7 +68,7 @@ object placesCheck {
 					  else{
 						  query_all_x_address(data,key)
 					  }
-		  }  
+		  }
 		  else{
 		    var untouched_data = ""
 		    for(i<- 0 until field.length - 1){
@@ -326,17 +326,15 @@ object placesCheck {
 						}
 					}
 
-					if(docs.length() > 0){
+					if(docs.length() > 0 && docs.getJSONObject(0).getString("types").contains("establishment")){
 						
 					  for(i <- 0 until docs.length()){
+							  google_id = docs.getJSONObject(i).getString("id")
+									  google_name = docs.getJSONObject(i).getString("name").replaceAll(",", "~")
+									  google_fmt_address = docs.getJSONObject(i).getString("formatted_address").replaceAll(",", "~")
+									  google_place_id = docs.getJSONObject(i).getString("place_id")
 
-							google_id = docs.getJSONObject(i).getString("id")
-							google_name = docs.getJSONObject(i).getString("name").replaceAll(",", " - ")
-							google_fmt_address = docs.getJSONObject(i).getString("formatted_address").replaceAll(",", " - ")
-							google_place_id = docs.getJSONObject(i).getString("place_id")
-
-							output_String = output_String + (i+1) + "," + google_id + "," + google_place_id + "," + google_name + "," + google_fmt_address + "," + csv + confidenceValue + "\n" 								
-
+									  output_String = output_String + (i+1) + "," + google_id + "," + google_place_id + "," + google_name + "," + google_fmt_address + "," + csv + confidenceValue + "\n" 								
 						}
 						println(docs.length()) // Number of Hits
 						output_String.substring(0, output_String.length - 1)
@@ -363,100 +361,4 @@ object placesCheck {
 					val result = scala.io.Source.fromURL(url).mkString
 					result  
 	}
-
-	/*	def getPlaceIdName(key:String, data:String,delimitter:String):String={
-			val field = data.split(delimitter)
-					var queryFields = ""
-					for(j <- 3 until 9){
-						queryFields = queryFields + field(j) + "+" 
-					}
-			queryFields = queryFields + field(10) // plus country
-//			val query = queryFields.substring(0, queryFields.length() - 1).replaceAll("\\s+", "+")
-
-			// if the business name is WALLMART, take only name+state+zip5+zip4
-			if(field(3) == "WALMART" || field(3) == "WALLMART"){
-			  queryFields = field(3) + "+" + field(6) + "+" + field(7) + "+" + field(8)
-			}
-			// if the business name is EUBERAH, take only name+state+country
-			if(field(3) == "EUBERAH JEWELRY CO"){
-			  queryFields = field(3) + "+" + field(6)+ "+" +field(10)
-			}
-			// if the business name is SPACE NEEDLE TICKETS or THE COTTAGE, remove the address line
-			/*if(field(3) == "SPACE NEEDLE TICKETS" || field(3) == "JOS A BANK CLOTHIERS" || field(3) == "TOBACCO UNLIMITED" || field(3) == "BOOSTABILITY" || field(3) == "WELBORNS THRIFTWAY" || field(3) == "LEGAL CBAR" || field(3) == "MINETTA TAVERN") {
-			  queryFields = field(3) + "+" + field(5) + "+" + field(6) + "+" + field(7) + "+" + field(8) + "+" + field(10)
-			}*/
-			// if the business name is "THE COTTAGE"
-			if(field(3) == "THE COTTAGE"){
-			  queryFields = field(3) + "+" + field(5) + "+" + field(6) + "+" + field(7) + "+" + field(8)
-			}
-			// if the business name is HUMC APOTHECARY, remove the country name
-			if(field(3) == "HUMC APOTHECARY" || field(3) == "WATERHOLE" || field(3) == "SURGERY CENTERS OF DELMAR"){
-			  queryFields = field(3) + "+" + field(4) + "+" + field(5) + "+" + field(6) + "+" + field(7) + "+" + field(8)
-			}
-			// if the business name is N NUTRITION, add the business name with digits along with the query string
-			if(field(3) == "N NUTRITION" || field(3) == "ST CENTURY SHOOTING"){
-			  queryFields = field(2) + "+" + field(4) + "+" + field(5) + "+" + field(6) + "+" + field(7) + "+" + field(8) + "+" + field(10)
-			}
-			// if the business name is THE VILLAGE SUMMIT, remove zip4
-			if(field(3) == "THE VILLAGE SUMMIT" || field(3) == "AUTOZONE" || field(3) == "FAMOUS FOOTWEAR" || field(3) == "HY VEE"){
-			  queryFields = field(3) + "+" + field(4) + "+" + field(5) + "+" + field(6) + "+" + field(7) + "+" + field(10)
-			}
-			// Remove address line and zip4
-			if(field(3) == "GREENWOOD UD"){
-			  queryFields = field(3) + "+" + field(5) + "+" + field(6) + "+" + field(7) + "+" + field(10)
-			}
-
-			val query = queryFields.replaceAll("\\s+", "+")
-			println(query)
-
-			// if no records match from the lookup File
-					if(field(0).contains("null")){
-
-						val jsonResult = placeMatch(query, key)
-								var output : JSONObject = null
-								output = new JSONObject(jsonResult)
-								val docs: JSONArray = output.getJSONArray("results")
-								var id = ""
-								var name = ""
-								var csv = ""
-
-								for (i <- 0 until docs.length) {
-									id = docs.getJSONObject(i).getString("id")
-									name = docs.getJSONObject(i).getString("name")
-								}
-						// Condition for GoogleId found or not found in GoogleAPIs.
-								if(id == ""){
-									for (k <- 2 until field.length - 1){
-										if(k != 3){
-											csv = csv + field(k) + delimitter
-										}
-									}
-									id + delimitter + name + delimitter + csv + "Google Place Mismatch"
-								}
-								else{
-									for (k <- 2 until field.length){
-										if(k != 3){
-											csv = csv + field(k) + delimitter
-										}
-									}
-									id + delimitter + name + delimitter + csv.substring(0, csv.length - 1)  
-								}
-					}
-			// if records are found from the lookupFile.
-					else{
-						var noApi = ""
-								for(m <- 0 until field.length ){
-									if(m != 3){
-										noApi = noApi + field(m) + delimitter
-									}
-								}
-						noApi.substring(0, noApi.length - 1)
-					}
-	}
-
-	def placeMatch(query:String,key:String):String={
-			val url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="+query+"&key="+key
-					val result = scala.io.Source.fromURL(url).mkString
-					result  
-	}*/
 }

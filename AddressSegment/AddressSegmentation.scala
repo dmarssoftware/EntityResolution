@@ -17,14 +17,14 @@ object AddressSegmentation {
 			val outputFile = args(1)
 			val merchLookup = args(2)
 			val delimitter = args(3)
-			val businessName = args(4)
-			val address1 = args(5)
-			val address2 = args(6)
-			val city = args(7)
-			val state = args(8)
-			val zip5 = args(9)
+			val businessName = args(4).toInt
+			val address1 = args(5).toInt
+			val address2 = args(6).toInt
+			val city = args(7).toInt
+			val state = args(8).toInt
+			val zip5 = args(9).toInt
 //			val zip4 = args(9)
-      val country = args(10)
+      val country = args(10).toInt
       
       val lookupPath =sc.textFile(merchLookup).collect()
 			val inputPath = sc.textFile(inputFile)
@@ -36,7 +36,8 @@ object AddressSegmentation {
 
 	}
 		
-	def AddressStandard(input:String,delimitter:String,businessName:String,address1:String,address2:String,city:String,state:String,zip5:String,country:String,merchLookup:Array[String]):String={
+def AddressStandard(input:String,delimitter:String,businessName:Int,address1:Int,address2:Int,city:Int,state:Int,zip5:Int,country:Int,merchLookup:Array[String]):String={
+
 
 //					val property = Source.fromFile(configFile).mkString
 					var unusedColumnArray = ArrayBuffer[Int]()
@@ -60,6 +61,7 @@ object AddressSegmentation {
 					usedColumnArray += city.toInt
 					usedColumnArray += state.toInt
 					usedColumnArray += zip5.toInt
+					usedColumnArray += country.toInt
 //					usedColumnArray += zip4.toInt
 //										println(usedColumnArray)
 
@@ -71,7 +73,7 @@ object AddressSegmentation {
 							unusedColumnArray += j
 						}
 					}
-					unusedColumnArray += businessName.toInt
+//					unusedColumnArray += businessName.toInt
 //										println(unusedColumnArray)
 
 					for(i <- 0 until input.split("\n").length){
@@ -165,7 +167,7 @@ object AddressSegmentation {
 									comments_req = "USPS Mismatch "
 								}
 								else{
-									comments_req = input.split("\n")(i).split(delimitter)(country.toInt+1)
+									comments_req = input.split("\n")(i).split(delimitter)(input.split("\n")(0).split(delimitter).length -1)
 								}
 								
 								if(firmName_data == ""){
@@ -193,13 +195,13 @@ object AddressSegmentation {
 						    
 								unusedCol = ""
 								unusedFields = ""
-								for( k <- 0 until unusedColumnArray.length){
-									unusedCol = input.split("\n")(i).split(delimitter)(unusedColumnArray(k)).toUpperCase()
-											unusedCol = unusedCol + delimitter
+								for( k <- 1 until unusedColumnArray.length - 1){
+									unusedCol = input.split("\n")(i).split(delimitter)(unusedColumnArray(k))
+											unusedCol = unusedCol + ";"
 											unusedFields = unusedFields + unusedCol
 								}
-						    
-								val outputData = input.split("\n")(i).split(delimitter)(1).toUpperCase()+delimitter+
+
+								val outputData = unusedFields.substring(0, unusedFields.length - 1)+delimitter+
 								                  firmName_data+delimitter+
 								                  firmName_req+delimitter+
 								                  address_data+delimitter+
@@ -209,8 +211,8 @@ object AddressSegmentation {
 								                  zip4_data+delimitter+
 								                  surrKey_req+delimitter+
 								                  country_req+delimitter+
-								                  comments_req//+delimitter+unusedFields//+delimitter+deliveryPoint_data+delimitter+carrierRoute_data//+unusedCol
-								dataFields = dataFields + outputData.substring(0, outputData.length()-1)
+								                  comments_req//deliveryPoint_data+delimitter+carrierRoute_data//+unusedCol
+								dataFields = dataFields + outputData
 					}
 					dataFields
 	}

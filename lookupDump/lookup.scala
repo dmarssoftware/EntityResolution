@@ -31,7 +31,6 @@ object lookup {
 						val match_in_file = sc.textFile(inputAddrSegment)
 						val match_df= match_in_file.map( x => x.split(delimitter) ).map( x=> match_in(x(0),x(1).toUpperCase(),x(2).toUpperCase(),x(3).toUpperCase(),x(4).toUpperCase(),x(5).toUpperCase(),x(6).toUpperCase(),x(7).toUpperCase(),x(8).toUpperCase(),x(9).toUpperCase(),x(10).toUpperCase()) ).toDF()
 
-
 						golden_copy_df.registerTempTable("dedup")
 						match_df.registerTempTable("match")
 
