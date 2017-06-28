@@ -12,7 +12,8 @@ object GoogleAddressSegmentation {
 
 			val input = args(0)
 			val outputFile = args(1)
-			val apiKey = "AIzaSyBX1qKTponANRRRUUgVUBpGJpuKzbHeWPI"
+			val apiKey = "AIzaSyBX1qKTponANRRRUUgVUBpGJpuKzbHeWPI" //bigkey
+//			val apiKey = "AIzaSyCHc42hAbBwNz6z2h7ecuIduSZQMkxvR9Q"
 			val full_seg = sc.textFile(input).map ( x => getProperAddress(x, apiKey) ).saveAsTextFile(outputFile)
 	}
 	
@@ -23,7 +24,10 @@ object GoogleAddressSegmentation {
 					if(place_id != ""){
 						val jsonResult = googleAddrSegment(place_id, key)
 								var output : JSONObject = null
+//								println(place_id)
 								output = new JSONObject(jsonResult).getJSONObject("result")
+								println(output)
+								
 								val docs: JSONArray = output.getJSONArray("address_components")
 
 								var segment_addr = ""
@@ -67,6 +71,7 @@ object GoogleAddressSegmentation {
 								}
 								//	  		  println(docs.length())
 								segment_addr + "," + csv.substring(0, csv.length - 1)
+								
 					}
 					else{
 						",,,,"+dataString						

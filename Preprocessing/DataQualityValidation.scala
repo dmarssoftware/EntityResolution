@@ -18,7 +18,7 @@ object DataQualityValidation {
 			
 			val check_Junk = sc.textFile(inputFile)
 			              .map ( line => line.split(delimitter)
-			              .map (_.replaceAll("[^a-zA-Z0-9 `~!@#$%^&*()-_=+{}|;:<>?,.\\/\\\'\\\"\\\\]", "")
+			              .map (_.replaceAll("[^a-zA-Z0-9 `~!@#$%^&()_=+{}|;:<>?,.\\/\\\'\\\"\\\\]", "")  //Removed * and -
 			                     .trim())
 		                .mkString(","))
 		                .saveAsTextFile(outputFile)
